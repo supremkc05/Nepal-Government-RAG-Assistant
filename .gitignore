@@ -1,0 +1,112 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+venv.bak/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+pip-wheel-metadata/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Testing
+.pytest_cache/
+
+# Coverage
+.coverage
+coverage.xml
+htmlcov/
+
+# Type checking / linting
+.mypy_cache/
+.ruff_cache/
+
+# Environment / secret files
+.env
+.env.*
+.env.local
+secrets.json
+credentials.json
+service_account.json
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs and temporary files
+logs/
+*.log
+tmp/
+temp/
+*.tmp
+
+# Data / uploads / caches
+data/raw/
+data/processed/
+uploads/
+cache/
+.cache/
+tmp_data/
+cache_dir/
+
+# Qdrant / vector store / DB storage
+qdrant_storage/
+qdrant_db/
+qdrant-local/
+qdrant.db
+collections.json
+
+# Redis/local DB storage
+redis_data/
+
+# Streamlit
+.streamlit/
+
+# Model weights / large files
+models/
+checkpoint/
+*.ckpt
+*.pt
+*.bin
+*.safetensors
+*.onnx
+
+# Transformers / Hugging Face caches
+transformers_cache/
+huggingface/
+
+# Database files
+*.csv
+*.sqlite
+*.db
+
+# Node modules (if using frontend)
+node_modules/
