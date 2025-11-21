@@ -1,8 +1,8 @@
 from pydantic_settings import BaseSettings
 from typing import Optional
 
-class Settinngs(BaseSettings):
-    """ Application settings are loaded from the environment variables."""
+class Settings(BaseSettings):
+    """Application settings are loaded from the environment variables."""
 
     #app
     app_name: str = "Nepal Government Services Chat Assistant"
@@ -66,4 +66,4 @@ class Settinngs(BaseSettings):
         case_sensitive = False
         extra = "ignore" #ignore extra variables in the .env file instead of raising an error
 
-settings = Settinngs()
+settings = Settings()

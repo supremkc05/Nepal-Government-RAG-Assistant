@@ -1,10 +1,9 @@
 import logging 
 import sys
 from pathlib import Path
-from venv import logger
-from core.config import settings
+from .config import settings
 
-def setup_logger(name:str ="rag_assistant") -> logging.Logger:
+def setup_logger(name: str = "rag_assistant") -> logging.Logger:
     logger = logging.getLogger(name)
     logger.setLevel(getattr(logging, settings.log_level.upper()))
 
