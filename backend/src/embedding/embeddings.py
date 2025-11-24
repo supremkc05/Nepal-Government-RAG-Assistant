@@ -1,12 +1,15 @@
-from typing import List
+"""Embedding model wrapper for text vectorization."""
+
+from typing import List, Optional
 from sentence_transformers import SentenceTransformer
 from ..core.config import settings
 from ..core.logger import logger
 
+
 class EmbeddingModel:
     """Wrapper for embedding model."""
 
-    def __init__(self, model_name: str = None, device: str = None):
+    def __init__(self, model_name: Optional[str] = None, device: Optional[str] = None):
         """
         Initialize embedding model.
         
@@ -31,6 +34,10 @@ class EmbeddingModel:
         Returns:
             List of embedding vectors
         """
+        if not texts:
+            logger.warning("Empty text list provided for embedding")
+            return []
+            
         logger.debug(f"Embedding {len(texts)} texts")
         embeddings = self.model.encode(texts, show_progress_bar=False)
         return embeddings.tolist()
@@ -45,6 +52,10 @@ class EmbeddingModel:
         Returns:
             Embedding vector
         """
+        if not query or not query.strip():
+            logger.warning("Empty query provided for embedding")
+            return []
+            
         logger.debug(f"Embedding query: {query[:50]}...")
         embedding = self.model.encode([query], show_progress_bar=False)[0]
         return embedding.tolist()
