@@ -99,344 +99,53 @@ docker-compose down
 docker-compose up -d --build
 ```
 
-### 4. Access Your Application
+### 4. Access Application
 
-- **React Frontend**: http://localhost:3000
-- **API Documentation**: http://localhost:8000/docs
-- **Qdrant Dashboard**: http://localhost:6333/dashboard
-- **Backend API**: http://localhost:8000
+- Frontend: http://localhost:3000
+- API Documentation: http://localhost:8000/docs
+- Backend API: http://localhost:8000
 
-## Usage Guide
-
-### 1. Upload Documents
-
-Click the upload area in the left sidebar to add government documents:
-- Supported formats: PDF, DOC, DOCX, TXT
-- Documents are automatically processed and indexed
-- View all uploaded documents in the sidebar list
-
-### 2. Ask Questions
-
-Type your question in the chat interface:
-- "How do I apply for a passport?"
-- "What are citizenship requirements?"
-- "How to register a business in Nepal?"
-
-### 3. View Statistics
-
-Monitor your system in the left sidebar:
-- Total documents processed
-- System status
-- Collection information
-
-### 4. Quick Actions
-
-Use pre-configured buttons for common queries:
-- Passport Information
-- Citizenship
-- Tax Filing
-- Driving License
-- Business Registration
-- Social Security
-
-## Development Setup
-
-### Backend Development
+## Development
 
 ```bash
+# Backend
 cd backend
-
-# Create virtual environment
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-
-# Install dependencies
 pip install -r requirements.txt
+uvicorn src.api.main:app --reload
 
-# Run locally (requires Qdrant and Redis)
-uvicorn src.api.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-### Frontend Development
-
-```bash
+# Frontend
 cd ui
-
-# Install dependencies
 npm install
-
-# Run development server
 npm run dev
-
-# Build for production
-npm run build
 ```
 
 ## API Endpoints
 
-### Query
-```bash
-POST /api/v1/query
-Content-Type: application/json
+- `POST /api/v1/query` - Query the RAG system
+- `POST /api/v1/upload` - Upload documents
+- `GET /api/v1/stats` - Get statistics
+- `GET /api/v1/documents` - List documents
+- `GET /api/v1/health` - Health check
 
-{
-  "query": "How to apply for citizenship?",
-  "top_k": 5,
-  "use_hybrid": true,
-  "session_id": "optional_session_id"
-}
-```
 
-### Upload Document
-```bash
-POST /api/v1/upload
-Content-Type: multipart/form-data
-
-file: document.pdf
-```
-
-### Get Statistics
-```bash
-GET /api/v1/stats
-
-Response:
-{
-  "total_documents": 134,
-  "collection_name": "nepal_gov_docs",
-  "status": "active"
-}
-```
-
-### List Documents
-```bash
-GET /api/v1/documents
-
-Response:
-{
-  "documents": [
-    {
-      "filename": "passport_application.pdf",
-      "size_mb": 0.84,
-      "uploaded_at": 1765095365.68
-    }
-  ]
-}
-```
-
-### Health Check
-```bash
-GET /api/v1/health
-
-Response:
-{
-  "status": "healthy",
-  "service": "Nepal RAG Assistant"
-}
-```
-
-## Project Structure
-
-```
-nepal-rag-assistant/
-├── backend/                    # FastAPI backend
-│   ├── src/
-│   │   ├── api/               # API routes & dependencies
-│   │   │   ├── main.py        # FastAPI app
-│   │   │   ├── routes.py      # API endpoints
-│   │   │   └── dependencies.py
-│   │   ├── core/              # Core configuration
-│   │   │   ├── config.py      # Settings
-│   │   │   └── logger.py      # Logging
-│   │   ├── embedding/         # Embeddings
-│   │   │   └── embeddings.py
-│   │   ├── ingestion/         # Document processing
-│   │   │   └── pdf_loader.py
-│   │   ├── llm/               # LLM integration
-│   │   │   └── llm.py         # Gemini wrapper
-│   │   ├── retrieval/         # RAG retrieval
-│   │   │   └── retriever.py
-│   │   ├── vectorstore/       # Vector database
-│   │   │   └── qdrant_client.py
-│   │   ├── cache/             # Caching layer
-│   │   │   ├── cache_manager.py
-│   │   │   └── memory_manager.py
-│   │   └── rag_pipeline.py    # Main RAG orchestrator
-│   ├── Dockerfile
-│   └── data/                  # Data storage
-│       └── uploads/
-├── ui/                        # React frontend
-│   ├── src/
-│   │   ├── components/        # UI components
-│   │   │   ├── ChatHeader.tsx
-│   │   │   ├── ChatInput.tsx
-│   │   │   ├── ChatMessages.tsx
-│   │   │   ├── QuickActions.tsx
-│   │   │   └── ServiceSidebar.tsx
-│   │   ├── services/          # API service layer
-│   │   │   └── api.ts         # Backend API calls
-│   │   └── App.tsx            # Main app
-│   ├── Dockerfile
-│   ├── nginx.conf
-│   └── package.json
-├── docker-compose.yml         # Docker orchestration
-├── requirements.txt           # Python dependencies
-└── README.md
-```
-
-## Configuration
-
-Edit `backend/src/core/config.py` or set environment variables in `.env`:
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `LLM_PROVIDER` | `gemini` | LLM to use (gemini/openai) |
-| `GEMINI_API_KEY` | - | Google Gemini API key |
-| `OPENAI_API_KEY` | - | OpenAI API key (optional) |
-| `EMBEDDING_MODEL` | `all-MiniLM-L6-v2` | Sentence transformer model |
-| `CHUNK_SIZE` | `1000` | Text chunk size |
-| `CHUNK_OVERLAP` | `200` | Chunk overlap |
-| `TOP_K` | `5` | Number of documents to retrieve |
-| `QDRANT_URL` | - | Qdrant cloud URL |
-| `QDRANT_API_KEY` | - | Qdrant API key |
-| `REDIS_HOST` | `redis` | Redis host |
-| `REDIS_PORT` | `6379` | Redis port |
-
-## Testing
-
-```bash
-# Test backend health
-curl http://localhost:8000/api/v1/health
-
-# Test query endpoint
-curl -X POST http://localhost:8000/api/v1/query \
-  -H "Content-Type: application/json" \
-  -d '{"query": "How to apply for citizenship?", "top_k": 5, "use_hybrid": true}'
-
-# Test document upload
-curl -X POST http://localhost:8000/api/v1/upload \
-  -F "file=@document.pdf"
-
-# Get statistics
-curl http://localhost:8000/api/v1/stats
-
-# List documents
-curl http://localhost:8000/api/v1/documents
-```
 
 ## Tech Stack
 
-### Backend
-- **Framework**: FastAPI 0.104+
-- **LLM**: Google Gemini 2.5-flash / OpenAI GPT-4
-- **Embeddings**: Sentence Transformers (all-MiniLM-L6-v2)
-- **Vector DB**: Qdrant (cloud-based)
-- **Cache**: Redis 7
-- **Document Processing**: PyPDF2, PyMuPDF
-- **Language**: Python 3.10+
-
-### Frontend
-- **Framework**: React 18.3 with TypeScript
-- **Build Tool**: Vite 6.3
-- **UI Library**: Radix UI, Tailwind CSS
-- **Icons**: Lucide React
-- **HTTP Client**: Fetch API
-- **Web Server**: Nginx (Alpine)
-
-### Infrastructure
-- **Containerization**: Docker + Docker Compose
-- **Services**: 4 containers (frontend, backend, redis, qdrant)
-- **Networks**: Bridge network for inter-service communication
-
-## Troubleshooting
-
-### Port Already in Use
-```bash
-# Kill process on port 8000 (backend)
-lsof -ti:8000 | xargs kill -9
-
-# Kill process on port 3000 (frontend)
-lsof -ti:3000 | xargs kill -9
-```
-
-### Qdrant Connection Error
-```bash
-# Check if Qdrant is running
-docker ps | grep qdrant
-
-# Restart Qdrant
-docker-compose restart qdrant
-
-# Check Qdrant logs
-docker logs nepal-rag-qdrant
-```
-
-### Redis Connection Error
-```bash
-# Check if Redis is running
-docker ps | grep redis
-
-# Restart Redis
-docker-compose restart redis
-
-# Test Redis connection
-docker exec -it nepal-rag-redis redis-cli ping
-```
-
-### Frontend Not Loading
-```bash
-# Rebuild frontend
-docker-compose build frontend
-
-# Check nginx logs
-docker logs nepal-rag-frontend
-
-# Access frontend container
-docker exec -it nepal-rag-frontend sh
-```
-
-### Backend API Errors
-```bash
-# Check backend logs
-docker logs nepal-rag-backend
-
-# Restart backend
-docker-compose restart backend
-
-# Check environment variables
-docker exec -it nepal-rag-backend env | grep GEMINI
-```
+- **Backend**: FastAPI, Python 3.10+, Google Gemini 2.5-flash
+- **Frontend**: React 18.3, TypeScript, Vite, Tailwind CSS
+- **Vector DB**: Qdrant
+- **Cache**: Redis
+- **Container**: Docker + Docker Compose
 
 ## License
 
-MIT License - Feel free to use this project for educational and commercial purposes.
+MIT License
 
 ## Contributing
 
-Contributions are welcome! Here's how you can help:
+Contributions welcome! Fork, create a feature branch, and submit a PR.
 
-1. **Fork the repository**
-2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
-3. **Commit your changes** (`git commit -m 'Add amazing feature'`)
-4. **Push to the branch** (`git push origin feature/amazing-feature`)
-5. **Open a Pull Request**
+## Contact
 
-### Development Guidelines
-- Follow PEP 8 for Python code
-- Use TypeScript for React components
-- Write unit tests for new features
-- Update documentation for API changes
-- Test Docker builds before submitting PR
-
-## Contact & Support
-
-- **GitHub**: [@supremkc05](https://github.com/supremkc05)
-- **Project Repository**: [Nepal-Government-RAG-Assistant](https://github.com/supremkc05/Nepal-Government-RAG-Assistant)
-- **Issues**: [Report bugs or request features](https://github.com/supremkc05/Nepal-Government-RAG-Assistant/issues)
-
-## Acknowledgments
-
-- Qdrant for vector database
-- Google Gemini for LLM capabilities
-- Sentence Transformers for embeddings
-- FastAPI and React communities
-
+- GitHub: [@supremkc05](https://github.com/supremkc05)
+- Issues: [Report bugs](https://github.com/supremkc05/Nepal-Government-RAG-Assistant/issues)
