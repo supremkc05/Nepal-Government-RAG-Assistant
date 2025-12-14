@@ -87,9 +87,6 @@ collections.json
 # Redis/local DB storage
 redis_data/
 
-# Streamlit
-.streamlit/
-
 # Model weights / large files
 models/
 checkpoint/
@@ -110,3 +107,8 @@ huggingface/
 
 # Node modules (if using frontend)
 node_modules/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
