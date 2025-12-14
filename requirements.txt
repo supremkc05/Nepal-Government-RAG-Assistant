@@ -1,25 +1,37 @@
+# FastAPI & Server
 fastapi
 uvicorn[standard]
 
+# LangChain & PDF Processing
 langchain
 langchain-community
 langchain-text-splitters
 pypdf
 PyPDF2
 
+# Embeddings & ML
 sentence-transformers
 transformers
 torch
 
+# Vector Store & Search
 qdrant-client
 redis
 rank-bm25
 
-streamlit
+# LLM Providers
+google-generativeai
+
+# API & File Handling
 python-multipart
 aiofiles
 requests
 
+# Configuration & Environment
 python-dotenv
 pydantic
 pydantic-settings
+
+# Testing (dev/test)
+pytest
+pytest-asyncio
