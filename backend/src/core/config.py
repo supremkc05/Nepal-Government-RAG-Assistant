@@ -18,7 +18,6 @@ class Settings(BaseSettings):
     llm_provider: str = "gemini"
     gemini_api_key: Optional[str] = None
     google_api_key: Optional[str] = None # alternative name for gemini_api_key
-    openai_api_key: Optional[str] = None
 
     # embedding model
     embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
@@ -55,7 +54,7 @@ class Settings(BaseSettings):
 
     # security
     api_key: str = "change-this-secret-key"
-    allowed_origins:str ="http://localhost:8501,http://localhost:3000"
+    allowed_origins:str ="http://localhost:3000,http://localhost:3001,http://localhost:3002"
 
     #logging
     log_level: str = "info"

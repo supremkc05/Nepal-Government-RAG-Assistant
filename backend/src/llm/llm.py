@@ -24,13 +24,11 @@ class LLMProvider:
         self._initialize_model()
 
     def _initialize_model(self):
-        """Initialize the appropriate LLM model."""
+        """Initialize the Gemini LLM model."""
         if self.provider == "gemini":
             self._initialize_gemini()
-        elif self.provider == "openai":
-            self._initialize_openai()
         else:
-            raise ValueError(f"Unsupported LLM provider: {self.provider}")
+            raise ValueError(f"Unsupported LLM provider: {self.provider}. Only 'gemini' is supported.")
 
     def _initialize_gemini(self):
         """Initialize Google Gemini model."""
@@ -42,7 +40,8 @@ class LLMProvider:
                 raise ValueError("Gemini API key not found in settings")
             
             genai.configure(api_key=api_key)
-            self.model = genai.GenerativeModel('gemini-pro')
+            # Use Gemini 2.5 Flash (latest generation)
+            self.model = genai.GenerativeModel('gemini-2.5-flash')
             
             logger.info("Gemini model initialized successfully")
             
@@ -51,27 +50,6 @@ class LLMProvider:
             raise
         except Exception as e:
             logger.error(f"Error initializing Gemini: {e}")
-            raise
-
-    def _initialize_openai(self):
-        """Initialize OpenAI model."""
-        try:
-            from openai import OpenAI
-            
-            api_key = settings.openai_api_key
-            if not api_key:
-                raise ValueError("OpenAI API key not found in settings")
-            
-            self.model = OpenAI(api_key=api_key)
-            self.openai_model = "gpt-3.5-turbo"  # Default model
-            
-            logger.info("OpenAI model initialized successfully")
-            
-        except ImportError:
-            logger.error("openai package not installed")
-            raise
-        except Exception as e:
-            logger.error(f"Error initializing OpenAI: {e}")
             raise
 
     def generate(self, 
@@ -97,12 +75,7 @@ class LLMProvider:
         full_prompt = self._build_prompt_with_context(prompt, context)
         
         try:
-            if self.provider == "gemini":
-                return self._generate_gemini(full_prompt, max_tokens, temperature)
-            elif self.provider == "openai":
-                return self._generate_openai(full_prompt, max_tokens, temperature)
-            else:
-                raise ValueError(f"Unsupported provider: {self.provider}")
+            return self._generate_gemini(full_prompt, max_tokens, temperature)
                 
         except Exception as e:
             logger.error(f"Error generating response: {e}")
@@ -166,25 +139,6 @@ Answer:"""
             logger.error(f"Gemini generation error: {e}")
             raise
 
-    def _generate_openai(self, prompt: str, max_tokens: int, temperature: float) -> str:
-        """Generate response using OpenAI."""
-        try:
-            response = self.model.chat.completions.create(
-                model=self.openai_model,
-                messages=[
-                    {"role": "system", "content": "You are a helpful assistant for Nepal Government Services."},
-                    {"role": "user", "content": prompt}
-                ],
-                max_tokens=max_tokens,
-                temperature=temperature,
-            )
-            
-            return response.choices[0].message.content
-            
-        except Exception as e:
-            logger.error(f"OpenAI generation error: {e}")
-            raise
-
     def generate_stream(self, 
                        prompt: str, 
                        context: Optional[List[Dict]] = None,
@@ -205,12 +159,7 @@ Answer:"""
         full_prompt = self._build_prompt_with_context(prompt, context)
         
         try:
-            if self.provider == "gemini":
-                yield from self._generate_gemini_stream(full_prompt, max_tokens, temperature)
-            elif self.provider == "openai":
-                yield from self._generate_openai_stream(full_prompt, max_tokens, temperature)
-            else:
-                raise ValueError(f"Unsupported provider: {self.provider}")
+            yield from self._generate_gemini_stream(full_prompt, max_tokens, temperature)
                 
         except Exception as e:
             logger.error(f"Error in streaming generation: {e}")
@@ -236,26 +185,4 @@ Answer:"""
                     
         except Exception as e:
             logger.error(f"Gemini streaming error: {e}")
-            raise
-
-    def _generate_openai_stream(self, prompt: str, max_tokens: int, temperature: float):
-        """Generate streaming response using OpenAI."""
-        try:
-            response = self.model.chat.completions.create(
-                model=self.openai_model,
-                messages=[
-                    {"role": "system", "content": "You are a helpful assistant for Nepal Government Services."},
-                    {"role": "user", "content": prompt}
-                ],
-                max_tokens=max_tokens,
-                temperature=temperature,
-                stream=True,
-            )
-            
-            for chunk in response:
-                if chunk.choices[0].delta.content:
-                    yield chunk.choices[0].delta.content
-                    
-        except Exception as e:
-            logger.error(f"OpenAI streaming error: {e}")
             raise
